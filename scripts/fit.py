@@ -5,6 +5,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from category_encoders import CatBoostEncoder
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.linear_model import LogisticRegression
 from catboost import CatBoostClassifier
 import yaml
 import os
@@ -27,14 +28,14 @@ def fit_model():
     preprocessor = ColumnTransformer(
         [
             ('binary', OneHotEncoder(drop='if_binary'), binary_cat_features.columns.tolist()),
-            ('cat', CatBoostEncoder(return_df=False), other_cat_features.columns.tolist()),
+            ('cat', OneHotEncoder(), other_cat_features.columns.tolist()),
             ('num', StandardScaler(), num_features.columns.tolist())
         ],
         remainder='drop',
         verbose_feature_names_out=False
     )
 
-    model = CatBoostClassifier(auto_class_weights='Balanced')
+    model = LogisticRegression(C=1 , penalty='l2')
 
     pipeline = Pipeline(
         [
